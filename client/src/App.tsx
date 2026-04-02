@@ -1,5 +1,6 @@
 import { useState } from "react";
 import StartScreen from "./components/StartScreen";
+import Countdown from "./components/Countdown";
 
 type GameView = "start" | "countdown" | "playing" | "results";
 
@@ -13,10 +14,7 @@ function App() {
       )}
 
       {view === "countdown" && (
-        <div className="placeholder-view">
-          <h2>Get Ready...</h2>
-          <p>Countdown view coming soon</p>
-        </div>
+        <Countdown onComplete={() => setView("playing")} />
       )}
 
       {view === "playing" && (

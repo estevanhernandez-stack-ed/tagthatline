@@ -122,6 +122,54 @@ body {
   box-shadow: 0 2px 12px rgba(245, 158, 11, 0.3);
 }
 
+/* ── Countdown ───────────────────────────────────── */
+.countdown {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.countdown__number {
+  font-size: clamp(6rem, 20vw, 10rem);
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(
+    180deg,
+    var(--gold-light) 0%,
+    var(--gold-dark) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(0 4px 24px rgba(245, 158, 11, 0.35));
+  animation: countdown-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.countdown__clap {
+  font-size: clamp(5rem, 18vw, 9rem);
+  line-height: 1;
+  filter: drop-shadow(0 4px 24px rgba(245, 158, 11, 0.3));
+  animation: countdown-pop 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes countdown-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* ── Placeholder views ────────────────────────────── */
 .placeholder-view {
   text-align: center;
