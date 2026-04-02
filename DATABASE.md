@@ -12,18 +12,21 @@ No API key or service account needed for reads — the database is open for read
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
+// Firebase config — store in .env, do NOT commit
 const firebaseConfig = {
-  apiKey: "AIzaSyCgy-GIFMAvwNErU7iIroFOrH3dFNQKBnk",
-  authDomain: "guestbuzz-cineperks.firebaseapp.com",
-  projectId: "guestbuzz-cineperks",
-  storageBucket: "guestbuzz-cineperks.firebasestorage.app",
-  messagingSenderId: "252784643304",
-  appId: "1:252784643304:web:6d9017c5e19947b9ae8d5d",
+  apiKey: process.env.VITE_FIREBASE_API_KEY,
+  authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.VITE_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 ```
+
+Create a `.env` file (gitignored) with the actual values. Ask Este for the Firebase credentials.
 
 ## Collections
 
