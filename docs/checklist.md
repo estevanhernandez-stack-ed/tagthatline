@@ -16,25 +16,25 @@
   Acceptance: Firestore collection contains 20+ tagline movies and 50+ poster-only movies. Each document has all required fields. Tagline movies have non-empty taglines. All movies have valid TMDb poster paths.
   Verify: Open Firebase Console, navigate to the collection, and confirm document count and field structure. Spot-check 5 tagline movies and 5 decoy-only movies for complete, accurate data.
 
-- [ ] **2. Express backend — data loader and session endpoint**
+- [x] **2. Express backend — data loader and session endpoint**
   Spec ref: `spec.md > Backend > Express App Entry`, `spec.md > Backend > Data Loader Service`, `spec.md > Backend > Session Builder Service`, `spec.md > Backend > Session API Route`
   What to build: Scaffold the Express + TypeScript server. Implement the data loader service that connects to Firestore via `@lobby-suite/content-db`, pulls all movie documents into memory on startup, and separates them into tagline pool and full pool. Implement the session builder that randomly selects 10 tagline movies, picks 3 decoys per round filtered by genre and popularity similarity, and shuffles poster order. Expose `GET /api/session` returning the `SessionResponse` shape from the spec. Export the Express app for Cloud Functions via `onRequest(app)`.
   Acceptance: Hitting `GET /api/session` returns a JSON payload with 10 rounds, each containing a tagline string, a correctMovieId, and 4 shuffled posters with movieId, title, and posterUrl. Decoys are plausible (similar genre/popularity). No duplicate movies across rounds.
   Verify: Run the Express server locally and `curl http://localhost:PORT/api/session`. Confirm the response shape matches the spec. Check that decoy posters are genre-appropriate and poster URLs resolve to real images.
 
-- [ ] **3. React app shell and styled start screen**
+- [x] **3. React app shell and styled start screen**
   Spec ref: `spec.md > Frontend > App Shell`, `spec.md > Frontend > Start Screen`
   What to build: Scaffold the Vite + React + TypeScript frontend. Build the App component as a state machine with four views: `start`, `countdown`, `playing`, `results`. Build the StartScreen component — game title, single prominent Play button, no other interactive elements. Apply the purple-to-navy gradient background, gold accents, and theater-lobby typography via CSS custom properties in `global.css`.
   Acceptance: The start screen displays the game title on the purple-to-navy gradient with gold accents. The Play button is prominent and clearly tappable. No other interactive elements are visible.
   Verify: Run `npm run dev`, open the browser, and confirm the start screen matches the theater-lobby aesthetic — gradient background, gold accents, title, and a single Play button.
 
-- [ ] **4. Countdown sequence**
+- [x] **4. Countdown sequence**
   Spec ref: `spec.md > Frontend > Countdown`
   What to build: Build the Countdown component. After tapping Play, display a 3-2-1 countdown on screen, ending with a clapboard visual (🎬 emoji or styled element). Wire the App shell so tapping Play transitions to the countdown view, and the countdown completing transitions to the playing view. The timer must not start until the countdown finishes.
   Acceptance: Tapping Play triggers a visible 3-2-1 countdown. The countdown ends with a clapboard visual. After the clapboard, the view transitions to the game screen.
   Verify: Run dev server, tap Play, and watch the countdown animate through 3-2-1 and the clapboard before the game screen appears.
 
-- [ ] **5. Game screen — tagline display, poster grid, and tap mechanic**
+- [x] **5. Game screen — tagline display, poster grid, and tap mechanic**
   Spec ref: `spec.md > Frontend > Game Screen`, `spec.md > Frontend > Poster Card`
   What to build: Build the GameScreen component — fetch a session from `GET /api/session` when entering the playing state, display the current round's tagline prominently above a 2x2 poster grid. Build the PosterCard component with tap states: default, incorrect (grayed/X, untappable), correct (highlighted). Implement the tap-until-correct mechanic: first correct tap = 5 pts, second = 3 pts, third = 2 pts, all wrong first = 0 pts. Player always sees the correct poster highlighted before advancing. Player controls when to advance (tap/button to go to next round). Implement poster fallback — if an image fails to load, display the movie title instead.
   Acceptance: A tagline and four posters are visible simultaneously without scrolling. Tapping a wrong poster grays it out. Tapping the correct poster highlights it. Points are awarded per the 5/3/2/0 scheme. The correct poster is always revealed. Player advances manually. Broken poster images show the movie title.
