@@ -1,11 +1,14 @@
 import { useState } from "react";
 import StartScreen from "./components/StartScreen";
 import Countdown from "./components/Countdown";
+import GameScreen from "./components/GameScreen";
+import type { GameEndData } from "./lib/types";
 
 type GameView = "start" | "countdown" | "playing" | "results";
 
 function App() {
   const [view, setView] = useState<GameView>("start");
+  const [gameEndData, setGameEndData] = useState<GameEndData | null>(null);
 
   return (
     <div className="app">
@@ -18,16 +21,20 @@ function App() {
       )}
 
       {view === "playing" && (
-        <div className="placeholder-view">
-          <h2>Now Playing</h2>
-          <p>Game view coming soon</p>
-        </div>
+        <GameScreen
+          onGameEnd={(data) => {
+            setGameEndData(data);
+            setView("results");
+          }}
+        />
       )}
 
-      {view === "results" && (
+      {view === "results" && gameEndData && (
         <div className="placeholder-view">
           <h2>Results</h2>
-          <p>Results view coming soon</p>
+          <p>
+            Final Score: {gameEndData.score} / {gameEndData.maxScore}
+          </p>
         </div>
       )}
     </div>
