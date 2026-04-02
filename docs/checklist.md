@@ -42,19 +42,19 @@
 
   **🔲 CHECKPOINT — Pause here.** Run the app end-to-end from start screen through several gameplay rounds. Confirm the data pipeline (Firestore → Express → React) is working, posters are loading, and the tap mechanic feels right.
 
-- [ ] **6. Scoring, streak tracking, and timer**
+- [x] **6. Scoring, streak tracking, and timer**
   Spec ref: `spec.md > Frontend > Hooks > useTimer`, `spec.md > Frontend > Hooks > useGameState`, `spec.md > Frontend > Scoring Logic`
   What to build: Implement the `useTimer` hook — starts after countdown, counts up, visible during gameplay, stops when round 10 completes. Implement streak tracking in `useGameState` — consecutive first-tap correct answers, multiplier = streak count, resets on any wrong tap, new streak can begin anytime. Display the streak counter and timer visibly during gameplay. Implement the scoring logic in `scoring.ts` — per-round 5/3/2/0 scoring, streak multiplier on first-tap answers, time modifier as a bracket-based multiplier on raw score, flat 90-second bonus. Define the 7 rating tiers with movie-themed titles and score thresholds.
   Acceptance: Timer counts up during gameplay and is visible. Streak counter is visible and updates correctly (increments on first-tap correct, resets on any wrong tap). End-of-session calculation includes raw score, streak multiplier, time modifier, and 90-second bonus. The math is correct.
   Verify: Play a full 10-round session. Watch the timer and streak counter during gameplay. Check that first-tap correct answers build the streak and any wrong tap resets it. Note your raw score and verify the final calculation makes sense.
 
-- [ ] **7. End screen — score breakdown, rating title, play again**
+- [x] **7. End screen — score breakdown, rating title, play again**
   Spec ref: `spec.md > Frontend > End Screen`
   What to build: Build the EndScreen component. Display the full score breakdown: raw score, best streak, time taken, time modifier, 90-second bonus (if earned), and final calculated score. Show the math visibly so the player can trace the calculation. Display the rating title from the 7-tier system based on final score. Add a prominent Play Again button that starts a fresh session with a new `GET /api/session` call.
   Acceptance: End screen shows all score components and the visible calculation. Rating title matches the score tier. Play Again button starts a completely fresh session with new random taglines.
   Verify: Complete a full session and review the end screen. Verify the math adds up. Tap Play Again and confirm a fresh session with different taglines loads.
 
-- [ ] **8. Visual polish and responsive layout pass**
+- [x] **8. Visual polish and responsive layout pass**
   Spec ref: `spec.md > Frontend > Game Screen` (responsive layout), `spec.md > Stack` (CSS custom properties)
   What to build: Polish all screens to match the theater-lobby aesthetic — consistent purple-to-navy gradient, gold accents, gradient buttons across every view. Ensure the game screen layout is responsive: tagline + all four posters visible without scrolling on mobile, tablet, and desktop. Polish the countdown animation, poster card transitions (tap feedback, gray-out, correct highlight), and end screen score reveal. Typography and spacing should feel premium, not template-y.
   Acceptance: All screens use the consistent purple/navy/gold theme. The game is fully playable without scrolling on mobile-width screens. Tap feedback is smooth and clear. The overall feel is "theater lobby, not quiz template."
