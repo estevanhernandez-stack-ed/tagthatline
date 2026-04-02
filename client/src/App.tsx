@@ -2,6 +2,7 @@ import { useState } from "react";
 import StartScreen from "./components/StartScreen";
 import Countdown from "./components/Countdown";
 import GameScreen from "./components/GameScreen";
+import EndScreen from "./components/EndScreen";
 import type { GameEndData } from "./lib/types";
 
 type GameView = "start" | "countdown" | "playing" | "results";
@@ -9,6 +10,11 @@ type GameView = "start" | "countdown" | "playing" | "results";
 function App() {
   const [view, setView] = useState<GameView>("start");
   const [gameEndData, setGameEndData] = useState<GameEndData | null>(null);
+
+  const handlePlayAgain = () => {
+    setGameEndData(null);
+    setView("start");
+  };
 
   return (
     <div className="app">
@@ -30,17 +36,7 @@ function App() {
       )}
 
       {view === "results" && gameEndData && (
-        <div className="placeholder-view">
-          <h2>Results</h2>
-          <p>
-            Final Score: {gameEndData.score} / {gameEndData.maxScore}
-          </p>
-          <p>Best Streak: {gameEndData.bestStreak}</p>
-          <p>
-            Time: {Math.floor(gameEndData.elapsedSeconds / 60)}:
-            {String(gameEndData.elapsedSeconds % 60).padStart(2, "0")}
-          </p>
-        </div>
+        <EndScreen gameEndData={gameEndData} onPlayAgain={handlePlayAgain} />
       )}
     </div>
   );
