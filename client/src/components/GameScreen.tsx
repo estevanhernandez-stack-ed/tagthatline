@@ -158,17 +158,15 @@ function GameScreen({ onGameEnd }: GameScreenProps) {
         <span className="game-screen__score">Score: {score}</span>
       </div>
 
-      {/* -- Streak indicator -- */}
-      {currentStreak > 0 && (
-        <div className="game-screen__streak">
-          <span className="game-screen__streak-fire">&#x1F525;</span>{" "}
-          {currentStreak}
-        </div>
-      )}
-
-      {/* -- Tagline -- */}
+      {/* -- Tagline + optional streak -- */}
       <blockquote className="game-screen__tagline">
         &ldquo;{round.tagline}&rdquo;
+        {currentStreak > 0 && (
+          <span className="game-screen__streak">
+            <span className="game-screen__streak-fire">&#x1F525;</span>{" "}
+            {currentStreak}
+          </span>
+        )}
       </blockquote>
 
       {/* -- Poster grid -- */}

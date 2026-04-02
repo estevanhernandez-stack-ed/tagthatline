@@ -47,7 +47,9 @@ function PosterCard({ poster, state, onTap, disabled }: PosterCardProps) {
         )}
 
         {state === "correct" && (
-          <div className="poster-card__overlay poster-card__overlay--correct" />
+          <div className="poster-card__overlay poster-card__overlay--correct">
+            <span className="poster-card__check">&#x2713;</span>
+          </div>
         )}
       </div>
     </button>
