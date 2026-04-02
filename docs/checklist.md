@@ -10,7 +10,7 @@
 
 ## Checklist
 
-- [ ] **1. Seed the Firestore database with tagline and decoy movies**
+- [x] **1. Seed the Firestore database with tagline and decoy movies**
   Spec ref: `spec.md > Data Model > Firestore Collection`
   What to build: Populate the Firestore collection with movie documents. 20+ movies must have both a `tagline` and `posterPath` (eligible as correct answers). 50-100 additional movies need only a `posterPath` (decoy pool). Every document needs `movieId`, `title`, `posterPath`, `genres`, and `popularity`. Movies should be English-language, reasonably popular titles the target audience would recognize. Taglines sourced from TMDb movie details. Estevan provides the collection name.
   Acceptance: Firestore collection contains 20+ tagline movies and 50+ poster-only movies. Each document has all required fields. Tagline movies have non-empty taglines. All movies have valid TMDb poster paths.
