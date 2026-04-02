@@ -1,10 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import PosterCard from "./PosterCard";
-import type {
-  SessionResponse,
-  GameEndData,
-  RoundResult,
-} from "../lib/types";
+import { useTimer } from "../hooks/useTimer";
+import { useGameState } from "../hooks/useGameState";
+import type { SessionResponse, GameEndData } from "../lib/types";
 
 interface GameScreenProps {
   onGameEnd: (data: GameEndData) => void;
@@ -12,24 +10,32 @@ interface GameScreenProps {
 
 type CardStateMap = Record<string, "default" | "incorrect" | "correct">;
 
-function pointsForWrongCount(wrongTaps: number): number {
-  if (wrongTaps === 0) return 5;
-  if (wrongTaps === 1) return 3;
-  if (wrongTaps === 2) return 2;
-  return 0;
+function formatTime(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
 function GameScreen({ onGameEnd }: GameScreenProps) {
-  const [session, setSession] = useState<SessionResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const [currentRound, setCurrentRound] = useState(0);
-  const [score, setScore] = useState(0);
-  const [wrongTaps, setWrongTaps] = useState(0);
   const [cardStates, setCardStates] = useState<CardStateMap>({});
-  const [roundComplete, setRoundComplete] = useState(false);
-  const [roundResults, setRoundResults] = useState<RoundResult[]>([]);
+
+  const { elapsedSeconds, start: startTimer, stop: stopTimer } = useTimer();
+  const {
+    session,
+    currentRound,
+    score,
+    currentStreak,
+    bestStreak,
+    wrongTapsThisRound,
+    isRoundComplete,
+    isSessionComplete,
+    roundResults,
+    startSession,
+    tapPoster,
+    advanceRound,
+  } = useGameState();
 
   useEffect(() => {
     let cancelled = false;
@@ -39,8 +45,9 @@ function GameScreen({ onGameEnd }: GameScreenProps) {
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
         const data: SessionResponse = await res.json();
         if (!cancelled) {
-          setSession(data);
+          startSession(data);
           setLoading(false);
+          startTimer();
         }
       } catch (err) {
         if (!cancelled) {
@@ -50,63 +57,43 @@ function GameScreen({ onGameEnd }: GameScreenProps) {
       }
     }
     fetchSession();
-    return () => { cancelled = true; };
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [startSession, startTimer]);
+
+  // Stop timer when session completes
+  useEffect(() => {
+    if (isSessionComplete) {
+      stopTimer();
+    }
+  }, [isSessionComplete, stopTimer]);
 
   const round = session?.rounds[currentRound] ?? null;
 
   const handleTap = useCallback(
     (movieId: string) => {
-      if (!round || roundComplete) return;
+      if (!round || isRoundComplete) return;
 
-      if (movieId === round.correctMovieId) {
-        const pts = pointsForWrongCount(wrongTaps);
-        setScore((s) => s + pts);
+      const isCorrect = movieId === round.correctMovieId;
+      tapPoster(movieId, isCorrect);
+
+      if (isCorrect) {
         setCardStates((prev) => ({ ...prev, [movieId]: "correct" }));
-        setRoundComplete(true);
-
-        const correctPoster = round.posters.find(
-          (p) => p.movieId === round.correctMovieId
-        );
-        setRoundResults((prev) => [
-          ...prev,
-          {
-            tagline: round.tagline,
-            correctTitle: correctPoster?.title ?? "Unknown",
-            wrongTaps,
-            pointsEarned: pts,
-          },
-        ]);
       } else {
-        const newWrongTaps = wrongTaps + 1;
-        setWrongTaps(newWrongTaps);
         setCardStates((prev) => ({ ...prev, [movieId]: "incorrect" }));
 
-        // If all 3 wrong posters have been tapped, auto-reveal correct
-        if (newWrongTaps >= 3) {
+        // If this was the 3rd wrong tap, auto-reveal correct
+        if (wrongTapsThisRound + 1 >= 3) {
           setCardStates((prev) => ({
             ...prev,
             [movieId]: "incorrect",
             [round.correctMovieId]: "correct",
           }));
-          setRoundComplete(true);
-
-          const correctPoster = round.posters.find(
-            (p) => p.movieId === round.correctMovieId
-          );
-          setRoundResults((prev) => [
-            ...prev,
-            {
-              tagline: round.tagline,
-              correctTitle: correctPoster?.title ?? "Unknown",
-              wrongTaps: newWrongTaps,
-              pointsEarned: 0,
-            },
-          ]);
         }
       }
     },
-    [round, roundComplete, wrongTaps]
+    [round, isRoundComplete, wrongTapsThisRound, tapPoster]
   );
 
   const handleNext = useCallback(() => {
@@ -117,18 +104,28 @@ function GameScreen({ onGameEnd }: GameScreenProps) {
       onGameEnd({
         score,
         maxScore: session.rounds.length * 5,
+        rawScore: score,
+        bestStreak,
+        elapsedSeconds,
         rounds: roundResults,
       });
       return;
     }
 
-    setCurrentRound(nextRound);
-    setWrongTaps(0);
+    advanceRound();
     setCardStates({});
-    setRoundComplete(false);
-  }, [session, currentRound, score, roundResults, onGameEnd]);
+  }, [
+    session,
+    currentRound,
+    score,
+    bestStreak,
+    elapsedSeconds,
+    roundResults,
+    onGameEnd,
+    advanceRound,
+  ]);
 
-  /* ── Loading state ──────────────────────────────── */
+  /* -- Loading state -- */
   if (loading) {
     return (
       <div className="game-screen game-screen--loading">
@@ -152,20 +149,29 @@ function GameScreen({ onGameEnd }: GameScreenProps) {
 
   return (
     <div className="game-screen">
-      {/* ── Header bar ─────────────────────────────── */}
+      {/* -- Header bar -- */}
       <div className="game-screen__header">
         <span className="game-screen__round-indicator">
           Round {currentRound + 1} of {totalRounds}
         </span>
+        <span className="game-screen__timer">{formatTime(elapsedSeconds)}</span>
         <span className="game-screen__score">Score: {score}</span>
       </div>
 
-      {/* ── Tagline ────────────────────────────────── */}
+      {/* -- Streak indicator -- */}
+      {currentStreak > 0 && (
+        <div className="game-screen__streak">
+          <span className="game-screen__streak-fire">&#x1F525;</span>{" "}
+          {currentStreak}
+        </div>
+      )}
+
+      {/* -- Tagline -- */}
       <blockquote className="game-screen__tagline">
         &ldquo;{round.tagline}&rdquo;
       </blockquote>
 
-      {/* ── Poster grid ────────────────────────────── */}
+      {/* -- Poster grid -- */}
       <div className="game-screen__grid">
         {round.posters.map((poster) => (
           <PosterCard
@@ -173,13 +179,13 @@ function GameScreen({ onGameEnd }: GameScreenProps) {
             poster={poster}
             state={cardStates[poster.movieId] ?? "default"}
             onTap={handleTap}
-            disabled={roundComplete && cardStates[poster.movieId] !== "default"}
+            disabled={isRoundComplete && cardStates[poster.movieId] !== "default"}
           />
         ))}
       </div>
 
-      {/* ── Next button ────────────────────────────── */}
-      {roundComplete && (
+      {/* -- Next button -- */}
+      {isRoundComplete && (
         <button className="btn-play game-screen__next" onClick={handleNext}>
           {currentRound + 1 >= totalRounds ? "See Results" : "Next"}
         </button>

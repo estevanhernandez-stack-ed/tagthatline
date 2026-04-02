@@ -35,6 +35,11 @@ function App() {
           <p>
             Final Score: {gameEndData.score} / {gameEndData.maxScore}
           </p>
+          <p>Best Streak: {gameEndData.bestStreak}</p>
+          <p>
+            Time: {Math.floor(gameEndData.elapsedSeconds / 60)}:
+            {String(gameEndData.elapsedSeconds % 60).padStart(2, "0")}
+          </p>
         </div>
       )}
     </div>

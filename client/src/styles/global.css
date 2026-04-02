@@ -225,11 +225,38 @@ body {
   color: var(--text-muted);
 }
 
+.game-screen__timer {
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
 .game-screen__score {
   font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--gold-light);
+}
+
+/* -- Streak indicator -- */
+.game-screen__streak {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--gold-light);
+  animation: streak-pop 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.game-screen__streak-fire {
+  font-size: 1.2rem;
+}
+
+@keyframes streak-pop {
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 /* ── Tagline ─────────────────────────────────────── */

@@ -17,6 +17,9 @@ export interface SessionResponse {
 export interface GameEndData {
   score: number;
   maxScore: number;
+  rawScore: number;
+  bestStreak: number;
+  elapsedSeconds: number;
   rounds: RoundResult[];
 }
 
