@@ -1,8 +1,9 @@
 interface StartScreenProps {
   onPlay: () => void;
+  onDemo: () => void;
 }
 
-function StartScreen({ onPlay }: StartScreenProps) {
+function StartScreen({ onPlay, onDemo }: StartScreenProps) {
   return (
     <div className="start-screen">
       <div className="start-screen__content">
@@ -14,6 +15,9 @@ function StartScreen({ onPlay }: StartScreenProps) {
           Play
         </button>
       </div>
+      <footer className="start-screen__footer" onClick={onDemo}>
+        Developed at 626 Labs
+      </footer>
     </div>
   );
 }

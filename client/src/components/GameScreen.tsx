@@ -5,6 +5,7 @@ import { useGameState } from "../hooks/useGameState";
 import type { SessionResponse, GameEndData } from "../lib/types";
 
 interface GameScreenProps {
+  demoMode?: boolean;
   onGameEnd: (data: GameEndData) => void;
 }
 
@@ -16,7 +17,7 @@ function formatTime(seconds: number): string {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-function GameScreen({ onGameEnd }: GameScreenProps) {
+function GameScreen({ demoMode = false, onGameEnd }: GameScreenProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cardStates, setCardStates] = useState<CardStateMap>({});
@@ -124,6 +125,35 @@ function GameScreen({ onGameEnd }: GameScreenProps) {
     onGameEnd,
     advanceRound,
   ]);
+
+  // ---------- Demo auto-play ----------
+  useEffect(() => {
+    if (!demoMode || loading || !session || !round) return;
+
+    // If round is complete, auto-advance after a pause
+    if (isRoundComplete) {
+      const t = setTimeout(() => handleNext(), 1200);
+      return () => clearTimeout(t);
+    }
+
+    // Round 4 (index 3): tap one wrong poster first to show streak break
+    const shouldMiss = currentRound === 3 && wrongTapsThisRound === 0;
+
+    const delay = shouldMiss ? 1000 : 1200 + Math.random() * 800;
+
+    const t = setTimeout(() => {
+      if (shouldMiss) {
+        const wrongPoster = round.posters.find(
+          (p) => p.movieId !== round.correctMovieId && cardStates[p.movieId] !== "incorrect"
+        );
+        if (wrongPoster) handleTap(wrongPoster.movieId);
+      } else {
+        handleTap(round.correctMovieId);
+      }
+    }, delay);
+
+    return () => clearTimeout(t);
+  }, [demoMode, loading, session, round, currentRound, isRoundComplete, wrongTapsThisRound, cardStates, handleTap, handleNext]);
 
   /* -- Loading state -- */
   if (loading) {

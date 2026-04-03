@@ -51,11 +51,27 @@ body {
 /* ── Start Screen ─────────────────────────────────── */
 .start-screen {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
   min-height: 100dvh;
   padding: 2rem;
+}
+
+.start-screen__footer {
+  position: absolute;
+  bottom: 1.5rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.25);
+  letter-spacing: 0.08em;
+  cursor: default;
+  user-select: none;
+  transition: color 0.3s ease;
+}
+
+.start-screen__footer:hover {
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .start-screen__content {
