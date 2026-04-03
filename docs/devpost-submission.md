@@ -17,11 +17,15 @@ TypeScript, React, Vite, Express, Firebase Hosting, Firebase Cloud Functions, Fi
 
 ## Elevator Pitch
 
-Nobody is doing the visual match between movie taglines and posters. Existing trivia games are either text-only lists or poster identification — none of them put a famous tagline front and center against four real movie posters. Tag that Line fills that gap with a fast, replayable 10-round game that feels like a theater lobby, not a quiz template. Read the tagline, tap the poster, build streaks, race the clock, and find out if you're an "Award Season Legend" or "Straight to DVD."
+A 10-round visual trivia game matching iconic movie taglines to real posters. Read the line, tap the poster, build streaks, and race to see if you're an "Award Season Legend" or "Straight to DVD"!
 
 ---
 
 ## Project Story
+
+### Inspiration
+
+I was sitting in the office at the Denton Movie Tavern when I looked over at Chris Carter and said, "You like movies, and games, and word games. How about a game where you have to connect the tagline for a movie to the poster?"
 
 ### What it does
 
