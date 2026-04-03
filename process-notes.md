@@ -52,3 +52,13 @@
 - **Demo mode:** Estevan requested an auto-play demo mode for screen recording. Built as an Easter egg — tapping "Developed at 626 Labs" footer on the start screen triggers automated gameplay with paced answers and a deliberate miss on round 4 to showcase streak breaking.
 - **Submission artifacts:** Devpost submission copy (elevator pitch, project story, built-with tags), project icon (512px PNG, gold text on purple-navy gradient), all committed to docs/ and pushed to GitHub.
 - **Estevan's engagement:** High throughout. Directed architecture decisions (Firebase config, collection name, SDK choice), caught the poster cropping issue during checkpoint, requested the demo mode feature, and drove the submission strategy. Handled all Firebase/Google Cloud admin tasks (Blaze upgrade, IAM permissions, Firebase login) promptly when asked.
+
+## /reflect
+- **Quiz responses:** 
+  - Context question: Connected "context is everything" to his false start — recognized that weak buy-in on an idea poisons the whole downstream chain. Restarting wasn't wasted time, it was refusing to let thin context drive the process.
+  - Flipped interaction: Understood the interview format pulled out richer answers than prompting would have, and that the richness fed better documents downstream.
+  - Structural problems: Acknowledged context clearing helped, but noted he hasn't personally struggled with hallucination detection — "it's pretty clear when it's starting to happen." Proposed a drift analyzer concept where the AI itself recognizes when it's drifting from context. Genuine idea, not a scripted answer.
+  - Reflection: Would ignore the 3-4 hour time constraint next time. Proved during the process that "cut" items were trivially buildable — built the poster collage during PRD using three Python scripts and existing infrastructure.
+- **Process feedback for the plugin:** Two specific, actionable critiques: (1) Was chided for wanting to iterate on scoring math during PRD — scoring mechanics are requirements, not implementation details, and the process should support that. (2) Git repo should be initialized at /onboard so builders can share config and assets across sessions from the start. Also noted a fresh Mac workstation missing gcloud CLI caused deploy friction — dependency check at onboard would help.
+- **Self-assessment on goals:** Felt the process was rigorous and parts need to be repeated. Honest about where the process fell short for his workflow, not just where it helped.
+- **Engagement level:** High. Pushed back on the process itself with specific, constructive feedback. Didn't just accept the reflection — shaped it.
