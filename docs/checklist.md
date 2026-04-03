@@ -62,7 +62,7 @@
 
   **🔲 CHECKPOINT — Pause here.** Play a complete session from start to finish on both desktop and mobile. Check scoring math, rating tiers, visual consistency, and overall game feel. This is the last check before deployment.
 
-- [ ] **9. Deploy to Firebase Hosting**
+- [x] **9. Deploy to Firebase Hosting**
   Spec ref: `spec.md > Runtime & Deployment`
   What to build: Configure `firebase.json` for Hosting (static frontend) + Cloud Functions (Express backend) with rewrites. Set up `.firebaserc` with the project alias. Build the frontend for production. Deploy the Express backend as a Cloud Function. Deploy the frontend to Firebase Hosting. Confirm the live app works end-to-end.
   Acceptance: The app is accessible at the Firebase Hosting URL. `GET /api/session` works through the Cloud Function. A full game session plays through without errors on the live deployment.
