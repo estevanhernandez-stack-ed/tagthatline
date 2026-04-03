@@ -21,7 +21,9 @@ app.use("/api/session", sessionRouter);
 
 const dataReady = loadMovies().catch((err) => {
   console.error("[startup] Failed to load movie data:", err);
-  process.exit(1);
+  if (process.env.NODE_ENV !== "production") {
+    process.exit(1);
+  }
 });
 
 // ---------- Cloud Functions export ----------
