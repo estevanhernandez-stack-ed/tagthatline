@@ -1,19 +1,10 @@
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+// ---------- Firestore REST API ----------
+// Uses the public REST API to read from guestbuzz-cineperks Firestore.
+// More reliable in Cloud Functions than the Firebase client SDK.
 
-// ---------- Firebase init (public, read-only) ----------
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCgy-GIFMAvwNErU7iIroFOrH3dFNQKBnk",
-  authDomain: "guestbuzz-cineperks.firebaseapp.com",
-  projectId: "guestbuzz-cineperks",
-  storageBucket: "guestbuzz-cineperks.firebasestorage.app",
-  messagingSenderId: "252784643304",
-  appId: "1:252784643304:web:6d9017c5e19947b9ae8d5d",
-};
-
-const fbApp = initializeApp(firebaseConfig);
-const db = getFirestore(fbApp);
+const PROJECT_ID = "guestbuzz-cineperks";
+const COLLECTION = "movieQuestionStats";
+const FIRESTORE_URL = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/${COLLECTION}`;
 
 // ---------- Types ----------
 
@@ -30,36 +21,79 @@ export interface MovieDoc {
 
 // ---------- In-memory caches ----------
 
-/** Movies with a non-empty tagline AND posterPath — eligible as correct answers */
 let taglinePool: MovieDoc[] = [];
-
-/** All movies with a posterPath — eligible as decoys (superset of taglinePool) */
 let fullPool: MovieDoc[] = [];
-
 let loaded = false;
+let loadPromise: Promise<void> | null = null;
+
+// ---------- Firestore REST helpers ----------
+
+function extractString(field: any): string {
+  return field?.stringValue ?? "";
+}
+
+function extractNumber(field: any): number {
+  return Number(field?.integerValue ?? field?.doubleValue ?? 0);
+}
+
+function extractStringArray(field: any): string[] {
+  const arr = field?.arrayValue?.values;
+  if (!Array.isArray(arr)) return [];
+  return arr.map((v: any) => v.stringValue ?? "").filter(Boolean);
+}
+
+function parseDoc(fields: Record<string, any>): MovieDoc {
+  return {
+    movieTitle: extractString(fields.movieTitle),
+    tagline: extractString(fields.tagline),
+    posterPath: extractString(fields.posterPath),
+    genres: extractStringArray(fields.genres),
+    totalQuestions: extractNumber(fields.totalQuestions),
+    tmdbId: extractNumber(fields.tmdbId),
+    releaseYear: extractNumber(fields.releaseYear),
+    certification: extractString(fields.certification),
+  };
+}
 
 // ---------- Public API ----------
 
-export async function loadMovies(): Promise<void> {
-  if (loaded) return;
+export function loadMovies(): Promise<void> {
+  if (loaded) return Promise.resolve();
+  if (loadPromise) return loadPromise;
+  loadPromise = doLoad().catch((err) => {
+    loadPromise = null; // allow retry on next request
+    throw err;
+  });
+  return loadPromise;
+}
 
-  const snapshot = await getDocs(collection(db, "movieQuestionStats"));
+async function doLoad(): Promise<void> {
 
   const allDocs: MovieDoc[] = [];
+  let nextPageToken: string | undefined;
 
-  snapshot.forEach((doc) => {
-    const d = doc.data();
-    allDocs.push({
-      movieTitle: d.movieTitle ?? "",
-      tagline: d.tagline ?? "",
-      posterPath: d.posterPath ?? "",
-      genres: Array.isArray(d.genres) ? d.genres : [],
-      totalQuestions: d.totalQuestions ?? 0,
-      tmdbId: d.tmdbId ?? 0,
-      releaseYear: d.releaseYear ?? 0,
-      certification: d.certification ?? "",
-    });
-  });
+  // Firestore REST paginates at 300 docs by default
+  do {
+    const url = new URL(FIRESTORE_URL);
+    url.searchParams.set("pageSize", "1000");
+    if (nextPageToken) url.searchParams.set("pageToken", nextPageToken);
+
+    const res = await fetch(url.toString());
+    if (!res.ok) {
+      throw new Error(`Firestore REST error: ${res.status} ${await res.text()}`);
+    }
+
+    const body: any = await res.json();
+    const documents: any[] = body.documents ?? [];
+
+    for (const doc of documents) {
+      if (doc.fields) {
+        allDocs.push(parseDoc(doc.fields));
+      }
+    }
+
+    nextPageToken = body.nextPageToken as string | undefined;
+  } while (nextPageToken);
 
   taglinePool = allDocs.filter(
     (m) => m.tagline.trim() !== "" && m.posterPath.trim() !== ""
