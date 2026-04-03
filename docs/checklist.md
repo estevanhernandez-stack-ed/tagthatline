@@ -68,7 +68,7 @@
   Acceptance: The app is accessible at the Firebase Hosting URL. `GET /api/session` works through the Cloud Function. A full game session plays through without errors on the live deployment.
   Verify: Open the Firebase Hosting URL in a browser. Play a complete session on the live deployment. Check that poster images load, scoring works, and Play Again starts a fresh session.
 
-- [ ] **10. Submit your project to Devpost**
+- [x] **10. Submit your project to Devpost**
   Spec ref: `prd.md > What We're Building` (the core submission story)
   What to build: Walk through the Devpost submission form. Write a project name and tagline. Draft the project story using scope.md and prd.md as source material — explain what you built, why, and what you learned. Add "built with" tags for the tech stack (TypeScript, React, Express, Firebase, TMDb). Take screenshots of the working app: start screen, gameplay round, streak/multiplier moment, end screen with rating. Record a Spotlight tour demo video and upload to YouTube. Link the video in the submission. Upload the docs/ folder artifacts (scope, PRD, spec, checklist). Link the GitHub repo (https://github.com/estevanhernandez-stack-ed/tagthatline). Link the live Firebase deployment. Review everything and submit.
   Acceptance: Submission is live on Devpost with project name, tagline, description, built-with tags, screenshots, demo video, docs artifacts, repo link, and live deployment link. All required fields are complete.
